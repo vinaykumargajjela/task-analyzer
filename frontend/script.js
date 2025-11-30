@@ -1,80 +1,83 @@
 async function analyzeTasks() {
     const inputVal = document.getElementById('taskInput').value;
+    const strategyVal = document.getElementById('sortStrategy').value;
     const resultsDiv = document.getElementById('resultsList');
     const statusDiv = document.getElementById('status');
+    const statsBar = document.getElementById('statsBar');
     
     statusDiv.textContent = 'Processing...';
     
     try {
         const tasks = JSON.parse(inputVal);
-        console.log('Parsed tasks:', tasks);
 
-        // Fetch to our Django Backend
-        const response = await fetch('http://127.0.0.1:8000/api/tasks/analyze/', {
+        // Prepare payload with strategy
+        const payload = {
+            tasks: tasks,
+            strategy: strategyVal
+        };
+
+        const response = await fetch('/api/tasks/analyze/', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(tasks)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         });
 
-        console.log('Response status:', response.status);
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Server error: ${response.status} - ${errorText}`);
-        }
+        if (!response.ok) throw new Error('Network response was not ok');
 
         const sortedTasks = await response.json();
-        console.log('Sorted tasks:', sortedTasks);
         
-        // Clear previous results
+        // Render
         resultsDiv.innerHTML = '';
         statusDiv.textContent = '';
+        statsBar.innerHTML = `<span>Analyzed <strong>${sortedTasks.length}</strong> tasks</span>`;
 
         if (sortedTasks.length === 0) {
-            resultsDiv.innerHTML = '<p>No tasks to display</p>';
+            resultsDiv.innerHTML = '<div class="empty-state">No tasks found</div>';
             return;
         }
 
-        // Generate Cards
         sortedTasks.forEach(task => {
             const card = document.createElement('div');
-            // Determine Color Class based on score
+            
+            // Determine Class
             let priorityClass = 'priority-low';
             if (task.score > 80) priorityClass = 'priority-high';
             else if (task.score > 40) priorityClass = 'priority-medium';
 
             card.className = `task-card ${priorityClass}`;
+            
+            // Format Date
+            const dateObj = new Date(task.due_date);
+            const dateStr = dateObj.toLocaleDateString();
+
             card.innerHTML = `
-                <div class="task-header">
-                    <span>${task.title}</span>
-                    <span>Score: ${task.score}</span>
+                <div class="card-header">
+                    <h3>${task.title}</h3>
+                    <span class="score-badge">Score: ${task.score}</span>
                 </div>
-                <div class="task-meta">
-                    Due: ${task.due_date} | Effort: ${task.estimated_hours}h | Imp: ${task.importance}
+                <div class="card-body">
+                   <p>Importance: <strong>${task.importance}/10</strong></p>
+                </div>
+                <div class="card-meta">
+                    <span>📅 ${dateStr}</span>
+                    <span>⏱ ${task.estimated_hours} hrs</span>
                 </div>
             `;
             resultsDiv.appendChild(card);
         });
 
     } catch (error) {
-        console.error('Error:', error);
-        statusDiv.textContent = 'Error: ' + error.message;
-        resultsDiv.innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+        statusDiv.textContent = 'Error: Invalid JSON format';
+        console.error(error);
     }
 }
 
-// Pre-fill with dummy data for easy testing
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('taskInput').value = JSON.stringify([
-        {"title": "Submit Assignment", "due_date": "2023-11-28", "importance": 10, "estimated_hours": 2},
-        {"title": "Grocery Shopping", "due_date": "2025-12-05", "importance": 3, "estimated_hours": 1},
-        {"title": "Learn Django", "due_date": "2025-11-30", "importance": 8, "estimated_hours": 20}
-    ], null, 4);
-    
-    // Auto-analyze on load
-    setTimeout(function() {
-        analyzeTasks();
-    }, 500);
+// Pre-fill Dummy Data
+document.addEventListener('DOMContentLoaded', () => {
+    const dummyData = [
+        {"title": "Critical Bug Fix", "due_date": "2023-11-28", "importance": 10, "estimated_hours": 2, "dependencies": []},
+        {"title": "Long Term Project", "due_date": "2025-12-05", "importance": 8, "estimated_hours": 20, "dependencies": []},
+        {"title": "Blocked Task", "due_date": "2025-11-30", "importance": 5, "estimated_hours": 3, "dependencies": [101]}
+    ];
+    document.getElementById('taskInput').value = JSON.stringify(dummyData, null, 4);
 });

@@ -5,21 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Task Analyzer</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <div class="input-section">
-            <h2>Input Tasks (JSON)</h2>
-            <p>Format: [{"title": "Fix Bug", "due_date": "2025-12-01", "importance": 8, "estimated_hours": 2}]</p>
-            <textarea id="taskInput" placeholder="Paste your JSON here..."></textarea>
-            <button onclick="analyzeTasks()">Analyze Priorities</button>
-            <div id="status" style="margin-top: 10px; color: #666; font-size: 0.9em;"></div>
-        </div>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="brand">
+                <h1>Task Brain 🧠</h1>
+                <p>AI-Powered Prioritization</p>
+            </div>
+            
+            <div class="control-group">
+                <label for="sortStrategy">Strategy</label>
+                <select id="sortStrategy">
+                    <option value="default">Smart Score (Balanced)</option>
+                    <option value="fastest">Quick Wins (Fastest First)</option>
+                </select>
+            </div>
 
-        <div class="results-section">
-            <h2>Prioritized To-Do List</h2>
-            <div id="resultsList"></div>
-        </div>
+            <div class="input-wrapper">
+                <label>Input JSON Tasks</label>
+                <textarea id="taskInput" placeholder='[{"title": "Task 1", ...}]'></textarea>
+            </div>
+
+            <button onclick="analyzeTasks()" class="btn-primary">
+                Analyize Tasks
+            </button>
+            
+            <div id="status" class="status-msg"></div>
+        </aside>
+
+        <main class="main-content">
+            <header>
+                <h2>Prioritized Action Plan</h2>
+                <div class="stats" id="statsBar">
+                    <span>Waiting for input...</span>
+                </div>
+            </header>
+
+            <div id="resultsList" class="grid-container">
+                <div class="empty-state">
+                    Run analysis to see your tasks here.
+                </div>
+            </div>
+        </main>
     </div>
     <script src="/static/script.js"></script>
 </body>
