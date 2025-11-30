@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Task Analyzer</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="input-section">
+            <h2>Input Tasks (JSON)</h2>
+            <p>Format: [{"title": "Fix Bug", "due_date": "2025-12-01", "importance": 8, "estimated_hours": 2}]</p>
+            <textarea id="taskInput" placeholder="Paste your JSON here..."></textarea>
+            <button onclick="analyzeTasks()">Analyze Priorities</button>
+            <div id="status" style="margin-top: 10px; color: #666; font-size: 0.9em;"></div>
+        </div>
+
+        <div class="results-section">
+            <h2>Prioritized To-Do List</h2>
+            <div id="resultsList"></div>
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>
