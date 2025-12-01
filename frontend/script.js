@@ -16,7 +16,9 @@ async function analyzeTasks() {
             strategy: strategyVal
         };
 
-        const response = await fetch('/api/tasks/analyze/', {
+        const BACKEND_URL = "https://task-analyzer-n417.onrender.com";
+
+        const response = await fetch(`${BACKEND_URL}/api/tasks/analyze/`,{
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
