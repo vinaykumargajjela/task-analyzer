@@ -59,8 +59,8 @@ async function analyzeTasks() {
                    <p>Importance: <strong>${task.importance}/10</strong></p>
                 </div>
                 <div class="card-meta">
-                    <span>📅 ${dateStr}</span>
-                    <span>⏱ ${task.estimated_hours} hrs</span>
+                    <span> ${dateStr}</span>
+                    <span> ${task.estimated_hours} hrs</span>
                 </div>
             `;
             resultsDiv.appendChild(card);
